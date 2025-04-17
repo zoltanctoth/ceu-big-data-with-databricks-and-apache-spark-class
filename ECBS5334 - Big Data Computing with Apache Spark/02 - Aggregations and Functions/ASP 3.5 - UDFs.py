@@ -31,7 +31,7 @@
 # MAGIC ### User-Defined Function (UDF)
 # MAGIC A custom column transformation function
 # MAGIC
-# MAGIC - Can’t be optimized by Catalyst Optimizer
+# MAGIC - Can't be optimized by Catalyst Optimizer
 # MAGIC - Function is serialized and sent to executors
 # MAGIC - Row data is deserialized from Spark's native binary format to pass to the UDF, and the results are serialized back into Spark's native format
 # MAGIC - For Python UDFs, additional interprocess communication overhead between the executor and a Python interpreter running on each worker node
@@ -47,7 +47,7 @@
 
 # COMMAND ----------
 
-sales_df = spark.read.format("delta").load(DA.paths.sales)
+sales_df = spark.read.format("delta").load(sales_path)
 display(sales_df)
 
 # COMMAND ----------
@@ -63,8 +63,10 @@ display(sales_df)
 
 # COMMAND ----------
 
+
 def first_letter_function(email):
     return email[0]
+
 
 first_letter_function("annagray@kaufman.com")
 
@@ -139,10 +141,12 @@ display(sales_df.select(first_letter_udf(col("email"))))
 
 # COMMAND ----------
 
+
 # Our input/output is a string
 @udf("string")
 def first_letter_udf(email: str) -> str:
     return email[0]
+
 
 # COMMAND ----------
 
@@ -157,7 +161,7 @@ def first_letter_udf(email: str) -> str:
 
 from pyspark.sql.functions import col
 
-sales_df = spark.read.format("delta").load(DA.paths.sales)
+sales_df = spark.read.format("delta").load(sales_path)
 display(sales_df.select(first_letter_udf(col("email"))))
 
 # COMMAND ----------
@@ -175,7 +179,7 @@ display(sales_df.select(first_letter_udf(col("email"))))
 # MAGIC
 # MAGIC <img src="https://databricks.com/wp-content/uploads/2017/10/image1-4.png" alt="Benchmark" width ="500" height="1500">
 # MAGIC
-# MAGIC The user-defined functions are executed using: 
+# MAGIC The user-defined functions are executed using:
 # MAGIC * <a href="https://arrow.apache.org/" target="_blank">Apache Arrow</a>, an in-memory columnar data format that is used in Spark to efficiently transfer data between JVM and Python processes with near-zero (de)serialization cost
 # MAGIC * Pandas inside the function, to work with Pandas instances and APIs
 # MAGIC
@@ -186,10 +190,12 @@ display(sales_df.select(first_letter_udf(col("email"))))
 import pandas as pd
 from pyspark.sql.functions import pandas_udf
 
+
 # We have a string input/output
 @pandas_udf("string")
 def vectorized_udf(email: pd.Series) -> pd.Series:
     return email.str[0]
+
 
 # Alternatively
 # def vectorized_udf(email: pd.Series) -> pd.Series:
