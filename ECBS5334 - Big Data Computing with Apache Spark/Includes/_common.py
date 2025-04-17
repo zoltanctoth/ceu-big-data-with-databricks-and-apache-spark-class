@@ -1,33 +1,12 @@
 # Databricks notebook source
-# Simplified _common.py without DBAcademy dependencies
-
-# COMMAND ----------
-
-
-# Mount S3 bucket - Run this only if the bucket is not already mounted
-def mount_s3_bucket():
-    """Mount the S3 bucket to /mnt/data if not already mounted."""
-    try:
-        # Check if the mount point already exists
-        dbutils.fs.ls("/mnt/data")
-        print("The mount already exists!")
-    except Exception:
-        print("Mounting S3 bucket s3://dbx-data-public to /mnt/data...")
-        # Mount the S3 bucket to /mnt/data
-        dbutils.fs.mount("s3a://dbx-data-public", "/mnt/data")
-        print("S3 bucket mounted successfully!")
-
-
-# COMMAND ----------
-
 # Define paths for data access
 data_source_version = "v03"
 
 # Core data paths
-sales_path = f"/mnt/data/{data_source_version}/ecommerce/sales/sales.delta"
-users_path = f"/mnt/data/{data_source_version}/ecommerce/users/users.delta"
-events_path = f"/mnt/data/{data_source_version}/ecommerce/events/events.delta"
-products_path = f"/mnt/data/{data_source_version}/products/products.delta"
+sales_path = f"s3a://dbx-data-public/{data_source_version}/ecommerce/sales/sales.delta"
+users_path = f"s3a://dbx-data-public/{data_source_version}/ecommerce/users/users.delta"
+events_path = f"s3a://dbx-data-public/{data_source_version}/ecommerce/events/events.delta"
+products_path = f"s3a://dbx-data-public/{data_source_version}/products/products.delta"
 
 # People dataset path
 people_path = f"/mnt/data/{data_source_version}/people/people-with-dups.txt"
@@ -42,14 +21,13 @@ checkpoints_dir = "/tmp/spark-course-checkpoints"
 # Set Spark configuration parameters so paths can be accessed via SQL
 def setup_spark_conf():
     """Set Spark config parameters to access paths in SQL queries."""
-    spark.conf.set("sales_path", sales_path)
-    spark.conf.set("users_path", users_path)
-    spark.conf.set("events_path", events_path)
-    spark.conf.set("products_path", products_path)
-    spark.conf.set("people_path", people_path)
-    spark.conf.set("working_dir", working_dir)
-    spark.conf.set("checkpoints_dir", checkpoints_dir)
-
+    dbutils.widgets.text("sales_path", sales_path)
+    dbutils.widgets.text("users_path", users_path)
+    dbutils.widgets.text("events_path", events_path)
+    dbutils.widgets.text("products_path", products_path)
+    dbutils.widgets.text("people_path", people_path)
+    dbutils.widgets.text("working_dir", working_dir)
+    dbutils.widgets.text("checkpoints_dir", checkpoints_dir)
 
 # COMMAND ----------
 
@@ -176,10 +154,8 @@ def reset_working_dir():
 def cleanup():
     """Clean up resources at the end of a notebook."""
     try:
-        # Stop any active streams
         for stream in spark.streams.active:
             stream.stop()
-        print("Stopped all active streams.")
     except:
         pass
 
@@ -189,3 +165,7 @@ def cleanup():
         print(f"Removed working directory: {working_dir}")
     except:
         pass
+
+# COMMAND ----------
+
+

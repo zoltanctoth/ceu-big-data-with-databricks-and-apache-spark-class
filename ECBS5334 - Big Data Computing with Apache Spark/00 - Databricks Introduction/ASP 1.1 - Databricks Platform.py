@@ -68,18 +68,8 @@ print("Run python")
 
 # COMMAND ----------
 
-# MAGIC %scala
-# MAGIC println("Run scala")
-
-# COMMAND ----------
-
 # MAGIC %sql
 # MAGIC select "Run SQL"
-
-# COMMAND ----------
-
-# MAGIC %r
-# MAGIC print("Run R", quote=FALSE)
 
 # COMMAND ----------
 
@@ -92,7 +82,8 @@ print("Run python")
 
 # COMMAND ----------
 
-# MAGIC %sh ps | grep 'java'
+# MAGIC %sh
+# MAGIC ls 
 
 # COMMAND ----------
 
@@ -110,10 +101,7 @@ displayHTML(html)
 
 # COMMAND ----------
 
-# MAGIC
 # MAGIC %md
-# MAGIC
-# MAGIC
 # MAGIC
 # MAGIC ## Create documentation cells
 # MAGIC Render cell as <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank">Markdown</a> using the magic command: **`%md`**
@@ -178,31 +166,15 @@ displayHTML(html)
 
 # COMMAND ----------
 
-# MAGIC %fs mounts
-
-# COMMAND ----------
-
 # MAGIC %fs ls
 
 # COMMAND ----------
 
-# MAGIC %fs mkdirs dbfs:/tmp
+# MAGIC %fs mkdirs /example-folder
 
 # COMMAND ----------
 
-# MAGIC %fs ls dbfs:/tmp
-
-# COMMAND ----------
-
-# MAGIC %fs put dbfs:/tmp/FILL_IN.txt "This is a test " --overwrite=true
-
-# COMMAND ----------
-
-# MAGIC %fs ls dbfs:/tmp
-
-# COMMAND ----------
-
-# MAGIC %fs head dbfs:/tmp/FILL_IN.txt
+# MAGIC %fs ls /
 
 # COMMAND ----------
 
@@ -212,10 +184,6 @@ displayHTML(html)
 # MAGIC
 # MAGIC
 # MAGIC **`%fs`** is shorthand for the <a href="https://docs.databricks.com/dev-tools/databricks-utils.html" target="_blank">DBUtils</a> module: **`dbutils.fs`**
-
-# COMMAND ----------
-
-# MAGIC %fs help
 
 # COMMAND ----------
 
@@ -241,7 +209,7 @@ dbutils.fs.ls("dbfs:/tmp")
 
 # COMMAND ----------
 
-files = dbutils.fs.ls("dbfs:/tmp")
+files = dbutils.fs.ls("dbfs:/")
 display(files)
 
 # COMMAND ----------
@@ -252,15 +220,6 @@ display(files)
 # MAGIC
 # MAGIC
 # MAGIC Let's take one more look at our temp file...
-
-# COMMAND ----------
-
-file_name = "dbfs:/tmp/FILL_IN.txt"
-contents = dbutils.fs.head(file_name)
-
-print("-"*80)
-print(contents)
-print("-"*80)
 
 # COMMAND ----------
 
@@ -277,26 +236,8 @@ print("-"*80)
 
 # COMMAND ----------
 
-files = dbutils.fs.ls(DA.paths.events)
+files = dbutils.fs.ls("s3a://dbx-data-public/v03/ecommerce/events/events.delta")
 display(files)
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
-# MAGIC ## But, Wait!
-# MAGIC I cannot use variables in SQL commands.
-# MAGIC
-# MAGIC With the following trick you can!
-# MAGIC
-# MAGIC Declare the python variable as a variable in the spark context which SQL commands can access:
-
-# COMMAND ----------
-
-spark.conf.set("whatever.events", DA.paths.events)
 
 # COMMAND ----------
 
@@ -323,39 +264,30 @@ spark.conf.set("whatever.events", DA.paths.events)
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC CREATE TABLE IF NOT EXISTS events
-# MAGIC USING DELTA
-# MAGIC OPTIONS (path = "${whatever.events}");
+# MAGIC %sql 
+# MAGIC SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/events/events.delta`
 
 # COMMAND ----------
 
-# MAGIC
 # MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
-# MAGIC This table was saved in the database created for you in classroom setup.
-# MAGIC
-# MAGIC See database name printed below.
-
-# COMMAND ----------
-
-print(f"Database Name: {DA.schema_name}")
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
-# MAGIC ... or even the tables in that database:
+# MAGIC Creating a view for easier data access
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SHOW TABLES IN ${DA.schema_name}
+# MAGIC CREATE VIEW IF NOT EXISTS events AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/events/events.delta`
+
+# COMMAND ----------
+
+# MAGIC
+# MAGIC %md
+# MAGIC
+# MAGIC List the tables and views in the database
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SHOW TABLES IN ceu
 
 # COMMAND ----------
 
@@ -364,7 +296,7 @@ print(f"Database Name: {DA.schema_name}")
 # MAGIC
 # MAGIC
 # MAGIC
-# MAGIC View your database and table in the Data tab of the UI.
+# MAGIC View your database and table in the Catalog tab of the UI.
 
 # COMMAND ----------
 
@@ -404,104 +336,12 @@ print(f"Database Name: {DA.schema_name}")
 # MAGIC
 # MAGIC
 # MAGIC
-# MAGIC ## Add notebook parameters with widgets
-# MAGIC Use <a href="https://docs.databricks.com/notebooks/widgets.html" target="_blank">widgets</a> to add input parameters to your notebook.
-# MAGIC
-# MAGIC Create a text input widget using SQL.
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC CREATE WIDGET TEXT state DEFAULT "CA"
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
-# MAGIC Access the current value of the widget using the function **`getArgument`**
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT *
-# MAGIC FROM events
-# MAGIC WHERE geo.state = getArgument("state")
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC Remove the text widget
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC REMOVE WIDGET state
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
-# MAGIC To create widgets in Python, Scala, and R, use the DBUtils module: **`dbutils.widgets`**
-
-# COMMAND ----------
-
-dbutils.widgets.text("name", "CEU Student", "Name")
-dbutils.widgets.multiselect("colors", "orange", ["red", "orange", "black", "blue"], "Favorite Color?")
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
-# MAGIC Access the current value of the widget using the **`dbutils.widgets`** function **`get`**
-
-# COMMAND ----------
-
-name = dbutils.widgets.get("name")
-colors = dbutils.widgets.get("colors").split(",")
-
-html = "<div>Hi {}! Select your color preference.</div>".format(name)
-for c in colors:
-    html += f"""<label for="{c}" style="color:{c}"><input type="radio" name='color'>{c}</label><br>"""
-
-displayHTML(html)
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
-# MAGIC Remove all widgets
-
-# COMMAND ----------
-
-dbutils.widgets.removeAll()
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
 # MAGIC ### Clean up classroom
 # MAGIC Clean up any temp files, tables and databases created by this lesson
 
 # COMMAND ----------
 
-DA.cleanup()
+cleanup()
 
 # COMMAND ----------
 
