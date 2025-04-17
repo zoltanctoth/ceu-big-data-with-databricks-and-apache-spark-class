@@ -4,7 +4,9 @@
 # MAGIC
 # MAGIC
 # MAGIC # Abandoned Carts Lab
-# MAGIC Get abandoned cart items for email without purchases.
+# MAGIC Analyze data from an e-commerce website to identify users who have added items to their cart but did not complete the purchase.
+# MAGIC
+# MAGIC ##### Tasks
 # MAGIC 1. Get emails of converted users from transactions
 # MAGIC 2. Join emails with user IDs
 # MAGIC 3. Get cart item history for each user
@@ -80,21 +82,32 @@ display(converted_users_df)
 # COMMAND ----------
 
 expected_columns = ["email", "converted"]
-
 expected_count = 210370
 
-assert (
-    converted_users_df.columns == expected_columns
-), "converted_users_df does not have the correct columns"
+# Create test suite
+suite = create_test_suite("1.1")
 
-assert (
-    converted_users_df.count() == expected_count
-), "converted_users_df does not have the correct number of rows"
+# Run tests
+suite.test_equals(
+    actual=converted_users_df.columns,
+    expected=expected_columns,
+    description="converted_users_df has the correct columns",
+)
 
-assert (
-    converted_users_df.select(col("converted")).first()[0] == True
-), "converted column not correct"
-print("All test pass")
+suite.test_equals(
+    actual=converted_users_df.count(),
+    expected=expected_count,
+    description="converted_users_df has the correct number of rows",
+)
+
+suite.test_true(
+    condition=converted_users_df.select(col("converted")).first()[0] == True,
+    description="converted column is correct",
+)
+
+# Display results
+suite.display_results()
+assert suite.passed, "One or more tests failed."
 
 # COMMAND ----------
 
@@ -128,23 +141,40 @@ display(conversions_df)
 # COMMAND ----------
 
 expected_columns = ["email", "user_id", "user_first_touch_timestamp", "converted"]
-
 expected_count = 782749
-
 expected_false_count = 572379
 
-assert conversions_df.columns == expected_columns, "Columns are not correct"
+# Create test suite
+suite = create_test_suite("2.1")
 
-assert (
-    conversions_df.filter(col("email").isNull()).count() == 0
-), "Email column contains null"
+# Run tests
+suite.test_equals(
+    actual=conversions_df.columns,
+    expected=expected_columns,
+    description="Columns are correct",
+)
 
-assert conversions_df.count() == expected_count, "There is an incorrect number of rows"
+suite.test_equals(
+    actual=conversions_df.filter(col("email").isNull()).count(),
+    expected=0,
+    description="Email column contains no nulls",
+)
 
-assert (
-    conversions_df.filter(col("converted") == False).count() == expected_false_count
-), "There is an incorrect number of false entries in converted column"
-print("All test pass")
+suite.test_equals(
+    actual=conversions_df.count(),
+    expected=expected_count,
+    description="There is the correct number of rows",
+)
+
+suite.test_equals(
+    actual=conversions_df.filter(col("converted") == False).count(),
+    expected=expected_false_count,
+    description="There is the correct number of false entries in converted column",
+)
+
+# Display results
+suite.display_results()
+assert suite.passed, "One or more tests failed."
 
 # COMMAND ----------
 
@@ -178,17 +208,31 @@ display(carts_df)
 # COMMAND ----------
 
 expected_columns = ["user_id", "cart"]
-
 expected_count = 488403
 
-assert carts_df.columns == expected_columns, "Incorrect columns"
+# Create test suite
+suite = create_test_suite("3.1")
 
-assert carts_df.count() == expected_count, "Incorrect number of rows"
+# Run tests
+suite.test_equals(
+    actual=carts_df.columns, expected=expected_columns, description="Incorrect columns"
+)
 
-assert (
-    carts_df.select(col("user_id")).drop_duplicates().count() == expected_count
-), "Duplicate user_ids present"
-print("All test pass")
+suite.test_equals(
+    actual=carts_df.count(),
+    expected=expected_count,
+    description="Incorrect number of rows",
+)
+
+suite.test_equals(
+    actual=carts_df.select(col("user_id")).drop_duplicates().count(),
+    expected=expected_count,
+    description="Duplicate user_ids present",
+)
+
+# Display results
+suite.display_results()
+assert suite.passed, "One or more tests failed."
 
 # COMMAND ----------
 
@@ -226,19 +270,34 @@ expected_columns = [
     "converted",
     "cart",
 ]
-
 expected_count = 782749
-
 expected_cart_null_count = 397799
 
-assert email_carts_df.columns == expected_columns, "Columns do not match"
+# Create test suite
+suite = create_test_suite("4.1")
 
-assert email_carts_df.count() == expected_count, "Counts do not match"
+# Run tests
+suite.test_equals(
+    actual=email_carts_df.columns,
+    expected=expected_columns,
+    description="Columns do not match",
+)
 
-assert (
-    email_carts_df.filter(col("cart").isNull()).count() == expected_cart_null_count
-), "Cart null counts incorrect from join"
-print("All test pass")
+suite.test_equals(
+    actual=email_carts_df.count(),
+    expected=expected_count,
+    description="Counts do not match",
+)
+
+suite.test_equals(
+    actual=email_carts_df.filter(col("cart").isNull()).count(),
+    expected=expected_cart_null_count,
+    description="Cart null counts incorrect from join",
+)
+
+# Display results
+suite.display_results()
+assert suite.passed, "One or more tests failed."
 
 # COMMAND ----------
 
@@ -277,13 +336,27 @@ expected_columns = [
     "converted",
     "cart",
 ]
-
 expected_count = 204272
 
-assert abandoned_carts_df.columns == expected_columns, "Columns do not match"
+# Create test suite
+suite = create_test_suite("5.1")
 
-assert abandoned_carts_df.count() == expected_count, "Counts do not match"
-print("All test pass")
+# Run tests
+suite.test_equals(
+    actual=abandoned_carts_df.columns,
+    expected=expected_columns,
+    description="Columns do not match",
+)
+
+suite.test_equals(
+    actual=abandoned_carts_df.count(),
+    expected=expected_count,
+    description="Counts do not match",
+)
+
+# Display results
+suite.display_results()
+assert suite.passed, "One or more tests failed."
 
 # COMMAND ----------
 
@@ -317,13 +390,27 @@ abandoned_items_df.count()
 # COMMAND ----------
 
 expected_columns = ["items", "count"]
-
 expected_count = 12
 
-assert abandoned_items_df.count() == expected_count, "Counts do not match"
+# Create test suite
+suite = create_test_suite("6.1")
 
-assert abandoned_items_df.columns == expected_columns, "Columns do not match"
-print("All test pass")
+# Run tests
+suite.test_equals(
+    actual=abandoned_items_df.count(),
+    expected=expected_count,
+    description="Counts do not match",
+)
+
+suite.test_equals(
+    actual=abandoned_items_df.columns,
+    expected=expected_columns,
+    description="Columns do not match",
+)
+
+# Display results
+suite.display_results()
+assert suite.passed, "One or more tests failed."
 
 # COMMAND ----------
 
@@ -335,7 +422,8 @@ print("All test pass")
 
 # COMMAND ----------
 
-DA.cleanup()
+# Clean up resources at the end of the notebook
+cleanup()
 
 # COMMAND ----------
 

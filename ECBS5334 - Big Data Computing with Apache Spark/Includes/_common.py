@@ -1,105 +1,12 @@
 # Databricks notebook source
-def __validate_libraries():
-    import requests
-
-    try:
-        site = "https://github.com/databricks-academy/dbacademy"
-        response = requests.get(site)
-        error = f"Unable to access GitHub or PyPi resources (HTTP {response.status_code} for {site})."
-        assert (
-            response.status_code == 200
-        ), '{error} Please see the "Troubleshooting | {section}" section of the "Version Info" notebook for more information.'.format(
-            error=error, section="Cannot Install Libraries"
-        )
-    except Exception as e:
-        if type(e) is AssertionError:
-            raise e
-        error = f"Unable to access GitHub or PyPi resources ({site})."
-        raise AssertionError(
-            '{error} Please see the "Troubleshooting | {section}" section of the "Version Info" notebook for more information.'.format(
-                error=error, section="Cannot Install Libraries"
-            )
-        ) from e
-
-
-def __install_libraries():
-    global pip_command
-
-    specified_version = f"v3.0.23"
-    key = "dbacademy.library.version"
-    version = spark.conf.get(key, specified_version)
-
-    if specified_version != version:
-        print(
-            "** Dependency Version Overridden *******************************************************************"
-        )
-        print(
-            f"* This course was built for {specified_version} of the DBAcademy Library, but it is being overridden via the Spark"
-        )
-        print(
-            f'* configuration variable "{key}". The use of version v3.0.23 is not advised as we'
-        )
-        print(f"* cannot guarantee compatibility with this version of the course.")
-        print(
-            "****************************************************************************************************"
-        )
-
-    try:
-        from dbacademy import dbgems
-
-        installed_version = dbgems.lookup_current_module_version("dbacademy")
-        if installed_version == version:
-            pip_command = (
-                "list --quiet"  # Skipping pip install of pre-installed python library
-            )
-        else:
-            print(
-                f"WARNING: The wrong version of dbacademy is attached to this cluster. Expected {version}, found {installed_version}."
-            )
-            print(f"Installing the correct version.")
-            raise Exception("Forcing re-install")
-
-    except Exception as e:
-        # The import fails if library is not attached to cluster
-        if not version.startswith("v"):
-            library_url = (
-                f"git+https://github.com/databricks-academy/dbacademy@{version}"
-            )
-        else:
-            library_url = f"https://github.com/databricks-academy/dbacademy/releases/download/{version}/dbacademy-{version[1:]}-py3-none-any.whl"
-
-        default_command = f"install --quiet --disable-pip-version-check {library_url}"
-        pip_command = spark.conf.get("dbacademy.library.install", default_command)
-
-        if pip_command != default_command:
-            print(
-                f"WARNING: Using alternative library installation:\n| default: %pip {default_command}\n| current: %pip {pip_command}"
-            )
-        else:
-            # We are using the default libraries; next we need to verify that we can reach those libraries.
-            __validate_libraries()
-
-
-__install_libraries()
+# Simplified _common.py without DBAcademy dependencies
 
 # COMMAND ----------
-
-# MAGIC %pip $pip_command
-
-# COMMAND ----------
-
-# MAGIC %run ./_dataset_index
-
-# COMMAND ----------
-
-from dbacademy import dbgems
-from dbacademy.dbhelper import CourseConfig, DBAcademyHelper, LessonConfig, Paths
-from dbacademy.dbhelper.validations.validation_helper_class import ValidationHelper
-from pyspark.sql.types import StructType
 
 
 # Mount S3 bucket - Run this only if the bucket is not already mounted
 def mount_s3_bucket():
+    """Mount the S3 bucket to /mnt/data if not already mounted."""
     try:
         # Check if the mount point already exists
         dbutils.fs.ls("/mnt/data")
@@ -111,31 +18,174 @@ def mount_s3_bucket():
         print("S3 bucket mounted successfully!")
 
 
-# The following attributes are externalized to make them easy
-# for content developers to update with every new course.
+# COMMAND ----------
 
-course_config = CourseConfig(
-    course_code="asp",
-    course_name="apache-spark-programming-with-databricks",
-    data_source_name="apache-spark-programming-with-databricks",
-    data_source_version="v03",
-    install_min_time="2 min",
-    install_max_time="5 min",
-    remote_files=remote_files,
-    supported_dbrs=[
-        "11.3.x-scala2.12",
-        "11.3.x-photon-scala2.12",
-        "11.3.x-cpu-ml-scala2.12",
-    ],
-    expected_dbrs="11.3.x-scala2.12, 11.3.x-photon-scala2.12, 11.3.x-cpu-ml-scala2.12",
-)
+# Define paths for data access
+data_source_version = "v03"
 
-lesson_config = LessonConfig(
-    name=None,
-    create_schema=True,
-    create_catalog=False,
-    requires_uc=False,
-    installing_datasets=True,
-    enable_streaming_support=True,
-    enable_ml_support=False,
-)
+# Core data paths
+sales_path = f"/mnt/data/{data_source_version}/ecommerce/sales/sales.delta"
+users_path = f"/mnt/data/{data_source_version}/ecommerce/users/users.delta"
+events_path = f"/mnt/data/{data_source_version}/ecommerce/events/events.delta"
+products_path = f"/mnt/data/{data_source_version}/products/products.delta"
+
+# People dataset path
+people_path = f"/mnt/data/{data_source_version}/people/people-with-dups.txt"
+
+# Working directories - for lab exercises
+working_dir = "/tmp/spark-course-working"
+checkpoints_dir = "/tmp/spark-course-checkpoints"
+
+# COMMAND ----------
+
+
+# Set Spark configuration parameters so paths can be accessed via SQL
+def setup_spark_conf():
+    """Set Spark config parameters to access paths in SQL queries."""
+    spark.conf.set("sales_path", sales_path)
+    spark.conf.set("users_path", users_path)
+    spark.conf.set("events_path", events_path)
+    spark.conf.set("products_path", products_path)
+    spark.conf.set("people_path", people_path)
+    spark.conf.set("working_dir", working_dir)
+    spark.conf.set("checkpoints_dir", checkpoints_dir)
+
+
+# COMMAND ----------
+
+
+# Simple validation function to test if operations were successful
+def test_success(condition, success_message, failure_message):
+    """Simple test function to validate operations."""
+    if condition:
+        print(f"✅ {success_message}")
+        return True
+    else:
+        print(f"❌ {failure_message}")
+        return False
+
+
+# COMMAND ----------
+
+
+# Simple function to create test suites
+def create_test_suite(name):
+    """Create a simple test suite for validating lab exercises."""
+    return SimpleSuite(name)
+
+
+class SimpleSuite:
+    """A simplified test suite to replace DA.tests functionality."""
+
+    def __init__(self, name):
+        self.name = name
+        self.tests = []
+        self.passed = True
+
+    def test(self, description, test_function):
+        """Add a test with a custom test function."""
+        result = test_function()
+        self.tests.append((description, result))
+        if not result:
+            self.passed = False
+        return result
+
+    def test_equals(self, actual, expected, description):
+        """Test if actual equals expected."""
+        result = actual == expected
+        self.tests.append((description, result))
+        if not result:
+            self.passed = False
+            print(f"❌ {description} - Expected {expected}, got {actual}")
+        else:
+            print(f"✅ {description}")
+        return result
+
+    def test_true(self, condition, description):
+        """Test if condition is True."""
+        result = condition == True
+        self.tests.append((description, result))
+        if not result:
+            self.passed = False
+            print(f"❌ {description}")
+        else:
+            print(f"✅ {description}")
+        return result
+
+    def test_false(self, condition, description):
+        """Test if condition is False."""
+        result = condition == False
+        self.tests.append((description, result))
+        if not result:
+            self.passed = False
+            print(f"❌ {description}")
+        else:
+            print(f"✅ {description}")
+        return result
+
+    def test_length(self, collection, expected_length, description):
+        """Test if collection has expected length."""
+        actual_length = len(collection)
+        result = actual_length == expected_length
+        self.tests.append((description, result))
+        if not result:
+            self.passed = False
+            print(
+                f"❌ {description} - Expected length {expected_length}, got {actual_length}"
+            )
+        else:
+            print(f"✅ {description}")
+        return result
+
+    def display_results(self):
+        """Print test results summary."""
+        total = len(self.tests)
+        passed = sum(1 for _, result in self.tests if result)
+        print(f"\n===== Test Results for {self.name} =====")
+        print(f"Passed: {passed}/{total} tests")
+        if self.passed:
+            print("🎉 All tests passed!")
+        else:
+            print("❌ Some tests failed.")
+        print("=====================================\n")
+        return self.passed
+
+
+# COMMAND ----------
+
+
+# Simplified function to create working directory
+def reset_working_dir():
+    """Reset the working directory."""
+    try:
+        dbutils.fs.rm(working_dir, True)
+    except:
+        pass
+
+    try:
+        dbutils.fs.mkdirs(working_dir)
+        print(f"Created working directory: {working_dir}")
+    except:
+        print(f"Failed to create working directory: {working_dir}")
+
+
+# COMMAND ----------
+
+
+# Cleanup function that can be called at the end of notebooks
+def cleanup():
+    """Clean up resources at the end of a notebook."""
+    try:
+        # Stop any active streams
+        for stream in spark.streams.active:
+            stream.stop()
+        print("Stopped all active streams.")
+    except:
+        pass
+
+    try:
+        # Remove working directory
+        dbutils.fs.rm(working_dir, True)
+        print(f"Removed working directory: {working_dir}")
+    except:
+        pass

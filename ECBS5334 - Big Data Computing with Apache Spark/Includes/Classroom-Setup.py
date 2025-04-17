@@ -13,21 +13,21 @@ mount_s3_bucket()
 
 # COMMAND ----------
 
-DA = DBAcademyHelper(course_config, lesson_config)
-DA.reset_lesson()
-DA.init()
-DA.conclude_setup()
+# Set up spark configuration for SQL access to data paths
+setup_spark_conf()
 
-# Remove paths from DA object and define them directly
-sales_path = "/mnt/data/v03/ecommerce/sales/sales.delta"
-users_path = "/mnt/data/v03/ecommerce/users/users.delta"
-events_path = "/mnt/data/v03/ecommerce/events/events.delta"
-products_path = "/mnt/data/v03/products/products.delta"
+# COMMAND ----------
 
-# Set these as spark configuration parameters so they can be accessed as ${var_name} in SQL
-spark.conf.set("sales_path", sales_path)
-spark.conf.set("users_path", users_path)
-spark.conf.set("events_path", events_path)
-spark.conf.set("products_path", products_path)
+# Reset working directory for lab exercises
+reset_working_dir()
 
-DA.conclude_setup()
+# COMMAND ----------
+
+print("Classroom setup complete!")
+print(f"Data paths:")
+print(f"- Sales data: {sales_path}")
+print(f"- Users data: {users_path}")
+print(f"- Events data: {events_path}")
+print(f"- Products data: {products_path}")
+print(f"Working directory: {working_dir}")
+print(f"Checkpoints directory: {checkpoints_dir}")
