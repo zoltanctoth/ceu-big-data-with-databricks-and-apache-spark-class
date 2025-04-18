@@ -3,41 +3,31 @@
 
 # COMMAND ----------
 
-# Mount the S3 bucket
-mount_s3_bucket()
+# MAGIC %sql
+# MAGIC CREATE DATABASE IF NOT EXISTS ceu;
+# MAGIC USE ceu;
+# MAGIC
+# MAGIC DROP VIEW IF EXISTS sales;
+# MAGIC DROP VIEW IF EXISTS users;
+# MAGIC DROP VIEW IF EXISTS products;
+# MAGIC DROP VIEW IF EXISTS events;
+# MAGIC
+# MAGIC CREATE VIEW IF NOT EXISTS users AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/users/users.delta`;
+# MAGIC CREATE VIEW IF NOT EXISTS sales AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/sales/sales.delta`;
+# MAGIC CREATE VIEW IF NOT EXISTS products AS SELECT * FROM delta.`s3a://dbx-data-public/v03/products/products.delta`;
+# MAGIC CREATE VIEW IF NOT EXISTS events AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/events/events.delta`;
+# MAGIC
 
 # COMMAND ----------
 
-
-@DBAcademyHelper.monkey_patch
-def create_table(self, table_name, location):
-    import time
-
-    start = int(time.time())
-
-    print(f'Creating the table "{table_name}"', end="...")
-    spark.sql(f"CREATE OR REPLACE TABLE {table_name} SHALLOW CLONE delta.`{location}`")
-
-    print(f"({int(time.time())-start} seconds)")
-
+setup_spark_conf()
 
 # COMMAND ----------
 
-DA = DBAcademyHelper(course_config, lesson_config)
-DA.reset_lesson()
-DA.init()
-DA.conclude_setup()
+displayHTML("✅ Classroom setup complete! 🎉")
+displayHTML(f"<br/>")
+displayHTML(f"✅ Created database 'ceu'")
+displayHTML(f"<br/>")
+displayHTML(f"✅ Created views: users, sales, product, events")
 
-# Define paths directly instead of using DA.paths
-events_path = "/mnt/data/v03/ecommerce/events/events.delta"
-sales_path = "/mnt/data/v03/ecommerce/sales/sales.delta"
-users_path = "/mnt/data/v03/ecommerce/users/users.delta"
-products_path = "/mnt/data/v03/products/products.delta"
 
-# Using data from mounted S3 bucket
-DA.create_table("events", events_path)
-DA.create_table("sales", sales_path)
-DA.create_table("users", users_path)
-DA.create_table("products", products_path)
-
-DA.conclude_setup()

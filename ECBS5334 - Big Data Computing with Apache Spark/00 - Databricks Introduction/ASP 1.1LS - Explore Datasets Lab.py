@@ -33,7 +33,7 @@
 
 # COMMAND ----------
 
-# <FILL_IN>
+# MAGIC %fs ls /
 
 # COMMAND ----------
 
@@ -50,7 +50,7 @@
 # COMMAND ----------
 
 # TODO
-files = FILL_IN
+files = dbutils.fs.ls("/")
 display(files)
 
 # COMMAND ----------
@@ -70,7 +70,11 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC -- TODO
+# MAGIC CREATE VIEW IF NOT EXISTS users AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/users/users.delta`;
+# MAGIC CREATE VIEW IF NOT EXISTS sales AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/sales/sales.delta`;
+# MAGIC CREATE VIEW IF NOT EXISTS products AS SELECT * FROM delta.`s3a://dbx-data-public/v03/products/products.delta`;
+# MAGIC CREATE VIEW IF NOT EXISTS events AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/events/events.delta`;
+# MAGIC
 
 # COMMAND ----------
 
@@ -79,7 +83,7 @@ display(files)
 # MAGIC
 # MAGIC
 # MAGIC
-# MAGIC Use the data tab of the workspace UI to confirm your tables were created.
+# MAGIC Use the _Catalog_ tab of the workspace UI to confirm your tables were created.
 
 # COMMAND ----------
 
@@ -119,7 +123,7 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC -- TODO
+# MAGIC SELECT DISTINCT name FROM products;
 
 # COMMAND ----------
 
@@ -149,7 +153,7 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC -- TODO
+# MAGIC SELECT AVG(purchase_revenue_in_usd) FROM sales;
 
 # COMMAND ----------
 
@@ -182,7 +186,7 @@ display(files)
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC -- TODO
+# MAGIC SELECT distinct event_name FROM events
 
 # COMMAND ----------
 

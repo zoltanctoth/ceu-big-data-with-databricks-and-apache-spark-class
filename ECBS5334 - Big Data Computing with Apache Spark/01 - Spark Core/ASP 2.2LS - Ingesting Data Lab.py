@@ -36,7 +36,7 @@ print(dbutils.fs.head(single_product_csv_file_path).replace("\\n","\n"))
 
 # TODO - Create the products_df
 products_csv_path = f"{DA.paths.datasets}/products/products.csv"
-products_df = FILL_IN
+products_df = spark.read.csv(products_csv_path, header=True, inferSchema=True)
 
 products_df.printSchema()
 
@@ -65,9 +65,9 @@ print("All test pass")
 # COMMAND ----------
 
 # TODO
-ddl_schema = FILL_IN
+ddl_schema = "item_d: string, name: string, price: double"
 
-products_df3 = FILL_IN
+products_df3 = spark.read.csv(products_csv_path, header=True, schema=ddl_schema)
 
 # COMMAND ----------
 
@@ -97,7 +97,10 @@ print("All test pass")
 
 # TODO
 products_output_path = f"{DA.paths.working_dir}/delta/products"
-products_df.FILL_IN
+(products_df.write.format("delta")
+   .mode("overwrite")
+   .save(products_output_path)
+)
 
 # COMMAND ----------
 

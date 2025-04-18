@@ -17,6 +17,17 @@ checkpoints_dir = "/tmp/spark-course-checkpoints"
 
 # COMMAND ----------
 
+from types import SimpleNamespace
+DA = SimpleNamespace(
+    paths = SimpleNamespace(
+        datasets = f"s3a://dbx-data-public/{data_source_version}/",
+        working_dir=working_dir,
+        sales=sales_path
+    )
+)    
+
+# COMMAND ----------
+
 
 # Set Spark configuration parameters so paths can be accessed via SQL
 def setup_spark_conf():

@@ -327,6 +327,18 @@ budget_df.count()
 # MAGIC %md
 # MAGIC
 # MAGIC
+# MAGIC **`take(n)`** returns an the first `n` rows of a Dataframe.
+
+# COMMAND ----------
+
+budget_df.take(2)
+
+# COMMAND ----------
+
+# MAGIC
+# MAGIC %md
+# MAGIC
+# MAGIC
 # MAGIC **`collect`** returns an array of all rows in a DataFrame.
 
 # COMMAND ----------
@@ -367,7 +379,7 @@ display(spark.sql("SELECT * FROM budget"))
 
 # COMMAND ----------
 
-DA.cleanup()
+cleanup()
 
 # COMMAND ----------
 

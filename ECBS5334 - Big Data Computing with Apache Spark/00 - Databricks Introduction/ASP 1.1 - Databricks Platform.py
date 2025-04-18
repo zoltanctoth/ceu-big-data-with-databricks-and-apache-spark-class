@@ -196,7 +196,7 @@ displayHTML(html)
 
 # COMMAND ----------
 
-dbutils.fs.ls("dbfs:/tmp")
+dbutils.fs.ls("dbfs:/")
 
 # COMMAND ----------
 
@@ -205,11 +205,11 @@ dbutils.fs.ls("dbfs:/tmp")
 # MAGIC
 # MAGIC
 # MAGIC
-# MAGIC Visualize results in a table using the Databricks <a href="https://docs.databricks.com/notebooks/visualizations/index.html#display-function-1" target="_blank">display</a> function
+# MAGIC Visualize results in a table using the Databricks <a href="https://docs.databricks.com/notebooks/visualizations/index.html#display-function-1" target="_blank">display</a> function, Also, the `dbfs:/` prefix can be omitted.
 
 # COMMAND ----------
 
-files = dbutils.fs.ls("dbfs:/")
+files = dbutils.fs.ls("/")
 display(files)
 
 # COMMAND ----------

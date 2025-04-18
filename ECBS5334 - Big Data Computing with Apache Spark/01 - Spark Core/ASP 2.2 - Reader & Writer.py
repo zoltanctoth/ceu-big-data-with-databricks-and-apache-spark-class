@@ -29,6 +29,19 @@
 # MAGIC %md
 # MAGIC
 # MAGIC
+# MAGIC ## The `DA` object
+# MAGIC To ease our access to different paths, the _Classroom Setup_ scripts include an object called `DA` that we can use for accessing paths and different properties of our workspace.
+
+# COMMAND ----------
+
+DA
+
+# COMMAND ----------
+
+# MAGIC
+# MAGIC %md
+# MAGIC
+# MAGIC
 # MAGIC ## DataFrameReader
 # MAGIC Interface used to load a DataFrame from external storage systems
 # MAGIC
@@ -127,7 +140,7 @@ display(events_df)
 # MAGIC
 # MAGIC
 # MAGIC
-# MAGIC Read data faster by creating a **`StructType`** with the schema names and data types
+# MAGIC Read data by creating a **`StructType`** with the schema names and data types
 
 # COMMAND ----------
 
@@ -241,26 +254,11 @@ events_df.write.mode("overwrite").saveAsTable("events")
 # MAGIC
 # MAGIC
 # MAGIC This table was saved in the database created for you in classroom setup.
-# MAGIC
-# MAGIC See database name printed below.
-
-# COMMAND ----------
-
-print(f"Database Name: {DA.schema_name}")
-
-# COMMAND ----------
-
-# MAGIC
-# MAGIC %md
-# MAGIC
-# MAGIC
-# MAGIC
-# MAGIC ... or even the tables in that database:
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SHOW TABLES IN ${DA.schema_name}
+# MAGIC SHOW TABLES IN ceu
 
 # COMMAND ----------
 
@@ -317,7 +315,7 @@ events_output_path = f"{DA.paths.working_dir}/delta/events"
 
 # COMMAND ----------
 
-DA.cleanup()
+cleanup()
 
 # COMMAND ----------
 

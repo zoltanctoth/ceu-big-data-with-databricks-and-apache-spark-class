@@ -16,6 +16,12 @@ reset_working_dir()
 # MAGIC %sql
 # MAGIC CREATE DATABASE IF NOT EXISTS ceu;
 # MAGIC USE ceu;
+# MAGIC
+# MAGIC DROP TABLE IF EXISTS sales;
+# MAGIC DROP TABLE IF EXISTS users;
+# MAGIC DROP TABLE IF EXISTS products;
+# MAGIC DROP TABLE IF EXISTS events;
+# MAGIC
 
 # COMMAND ----------
 
@@ -28,8 +34,5 @@ displayHTML(f"Data paths:")
 displayHTML(f"- Users data: {users_path}")
 displayHTML(f"- Events data: {events_path}")
 displayHTML(f"- Products data: {products_path}")
-
-
-# COMMAND ----------
-
+displayHTML(f"- Sales data: {sales_path}")
 
