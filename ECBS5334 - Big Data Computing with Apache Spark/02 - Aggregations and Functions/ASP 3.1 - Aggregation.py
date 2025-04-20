@@ -186,7 +186,7 @@ display(state_aggregates_df)
 
 # COMMAND ----------
 
-DA.cleanup()
+cleanup()
 
 # COMMAND ----------
 

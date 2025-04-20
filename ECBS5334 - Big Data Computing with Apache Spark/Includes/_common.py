@@ -22,7 +22,10 @@ DA = SimpleNamespace(
     paths = SimpleNamespace(
         datasets = f"s3a://dbx-data-public/{data_source_version}/",
         working_dir=working_dir,
-        sales=sales_path
+        sales=sales_path,
+        events=events_path,
+        users=users_path,
+        products=products_path,
     )
 )    
 
@@ -179,4 +182,5 @@ def cleanup():
 
 # COMMAND ----------
 
-
+# Add cleanup function to maintain compatibility
+DA.cleanup = cleanup

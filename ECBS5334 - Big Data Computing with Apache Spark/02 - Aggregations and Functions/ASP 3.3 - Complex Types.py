@@ -176,7 +176,7 @@ mattress_count + size_count == union_count
 
 # COMMAND ----------
 
-DA.cleanup()
+cleanup()
 
 # COMMAND ----------
 

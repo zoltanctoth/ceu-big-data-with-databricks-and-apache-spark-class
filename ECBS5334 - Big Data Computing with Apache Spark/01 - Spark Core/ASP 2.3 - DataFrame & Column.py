@@ -360,7 +360,7 @@ display(decrease_sessions_df)
 
 # COMMAND ----------
 
-DA.cleanup()
+cleanup()
 
 # COMMAND ----------
 

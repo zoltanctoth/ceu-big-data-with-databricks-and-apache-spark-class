@@ -174,7 +174,7 @@ display(joined_df)
 
 # COMMAND ----------
 
-DA.cleanup()
+cleanup()
 
 # COMMAND ----------
 

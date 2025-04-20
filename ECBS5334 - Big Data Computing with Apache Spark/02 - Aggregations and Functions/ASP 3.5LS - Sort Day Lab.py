@@ -62,7 +62,7 @@ def label_day_of_week(day: str) -> str:
 # COMMAND ----------
 
 # TODO
-label_dow_udf = FILL_IN
+label_dow_udf = spark.udf.register("abel_dow_udf", label_day_of_week)
 
 # COMMAND ----------
 
@@ -78,7 +78,7 @@ label_dow_udf = FILL_IN
 # COMMAND ----------
 
 # TODO
-final_df = FILL_IN
+final_df = df.withColumn("day", label_dow_udf(col("day")))
 
 display(final_df)
 

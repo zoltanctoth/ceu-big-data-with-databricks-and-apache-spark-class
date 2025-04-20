@@ -65,7 +65,7 @@ display(events_df)
 # TODO
 from pyspark.sql.functions import *
 
-converted_users_df = sales_df.FILL_IN
+converted_users_df = sales_df.select("email").distinct().withColumn("converted", lit(True))
 display(converted_users_df)
 
 # COMMAND ----------
@@ -124,7 +124,7 @@ assert suite.passed, "One or more tests failed."
 # COMMAND ----------
 
 # TODO
-conversions_df = users_df.FILL_IN
+conversions_df = users_df.join(converted_users_df, "email", how="outer").filter(col("email").isNotNull()).fillna(False, "converted")
 display(conversions_df)
 
 # COMMAND ----------
@@ -190,7 +190,7 @@ assert suite.passed, "One or more tests failed."
 # COMMAND ----------
 
 # TODO
-carts_df = events_df.FILL_IN
+carts_df = events_df.withColumn("items", explode("items")).groupBy("user_id").agg(collect_list("items.item_id").alias("cart"))
 display(carts_df)
 
 # COMMAND ----------
@@ -245,7 +245,7 @@ assert suite.passed, "One or more tests failed."
 # COMMAND ----------
 
 # TODO
-email_carts_df = conversions_df.FILL_IN
+email_carts_df = conversions_df.join(carts_df, "user_id", how="left")
 display(email_carts_df)
 
 # COMMAND ----------
@@ -310,7 +310,7 @@ assert suite.passed, "One or more tests failed."
 # COMMAND ----------
 
 # TODO
-abandoned_carts_df = email_carts_df.FILL_IN
+abandoned_carts_df = email_carts_df.filter(col("converted") == False).filter(col("cart").isNotNull())
 display(abandoned_carts_df)
 
 # COMMAND ----------
@@ -364,8 +364,12 @@ assert suite.passed, "One or more tests failed."
 
 # COMMAND ----------
 
+display(abandoned_carts_df)
+
+# COMMAND ----------
+
 # TODO
-abandoned_items_df = abandoned_carts_df.FILL_IN
+abandoned_items_df = abandoned_carts_df.select(explode("cart").alias("items")).groupBy("items").count()
 display(abandoned_items_df)
 
 # COMMAND ----------
