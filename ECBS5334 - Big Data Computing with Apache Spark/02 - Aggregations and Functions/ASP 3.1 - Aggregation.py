@@ -166,7 +166,7 @@ display(city_purchase_quantities_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import avg, approx_count_distinct
+from pyspark.sql.functions import approx_count_distinct, avg
 
 state_aggregates_df = (df
                        .groupBy("geo.state")
@@ -191,5 +191,5 @@ cleanup()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC This courseware is built on top of the <a href="https://github.com/databricks-academy/apache-spark-programming-with-databricks-english">Official Databricks Spark Programming Course</a>.<br/>
+# MAGIC Licence: <a target='_blank' href='https://github.com/databricks-academy/apache-spark-programming-with-databricks/blob/published/LICENSE'>Creative Commons Zero v1.0 Universal</a>
 # MAGIC Apache, Apache Spark, Spark and the Spark logo are trademarks of the <a href="https://www.apache.org/">Apache Software Foundation</a>.<br/>

@@ -62,7 +62,7 @@ assert len(dbutils.fs.ls(delta_sales_path)) > 0
 # COMMAND ----------
 
 # ANSWER
-from pyspark.sql.functions import size, col
+from pyspark.sql.functions import col, size
 
 updated_sales_df = sales_df.withColumn("items", size(col("items")))
 display(updated_sales_df)
@@ -199,5 +199,5 @@ DA.cleanup()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC This courseware is built on top of the <a href="https://github.com/databricks-academy/apache-spark-programming-with-databricks-english">Official Databricks Spark Programming Course</a>.<br/>
+# MAGIC Licence: <a target='_blank' href='https://github.com/databricks-academy/apache-spark-programming-with-databricks/blob/published/LICENSE'>Creative Commons Zero v1.0 Universal</a>
 # MAGIC Apache, Apache Spark, Spark and the Spark logo are trademarks of the <a href="https://www.apache.org/">Apache Software Foundation</a>.<br/>

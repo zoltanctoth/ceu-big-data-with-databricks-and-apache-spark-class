@@ -65,7 +65,8 @@ display(datetime_df)
 
 # COMMAND ----------
 
-from pyspark.sql.types import DateType, StringType, StructField, StructType, TimestampType
+from pyspark.sql.types import (DateType, StringType, StructField, StructType,
+                               TimestampType)
 
 expected1a = StructType([StructField("user_id", StringType(), True),
                          StructField("ts", TimestampType(), True),
@@ -103,6 +104,7 @@ print("All test pass")
 
 # TODO
 from pyspark.sql.functions import approx_count_distinct
+
 active_users_df = (datetime_df.groupBy("date").agg(approx_count_distinct("user_id").alias("active_users")).orderBy("date")
 )
 display(active_users_df)
@@ -151,7 +153,8 @@ print("All test pass")
 # COMMAND ----------
 
 # TODO
-from pyspark.sql.functions import date_format, avg
+from pyspark.sql.functions import avg, date_format
+
 active_dow_df = (active_users_df.withColumn("day", date_format("date", "E")).groupBy("day").agg(avg("active_users").alias("avg_users"))
 )
 display(active_dow_df)
@@ -201,5 +204,5 @@ cleanup()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC This courseware is built on top of the <a href="https://github.com/databricks-academy/apache-spark-programming-with-databricks-english">Official Databricks Spark Programming Course</a>.<br/>
+# MAGIC Licence: <a target='_blank' href='https://github.com/databricks-academy/apache-spark-programming-with-databricks/blob/published/LICENSE'>Creative Commons Zero v1.0 Universal</a>
 # MAGIC Apache, Apache Spark, Spark and the Spark logo are trademarks of the <a href="https://www.apache.org/">Apache Software Foundation</a>.<br/>
