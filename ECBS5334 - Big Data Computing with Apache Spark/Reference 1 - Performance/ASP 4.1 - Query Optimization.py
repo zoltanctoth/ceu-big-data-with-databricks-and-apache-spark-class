@@ -1,5 +1,4 @@
 # Databricks notebook source
-# MAGIC
 # MAGIC %md
 # MAGIC
 # MAGIC
@@ -141,6 +140,12 @@ stupid_df.explain(True)
 # MAGIC %scala
 # MAGIC // Ensure that the driver class is loaded
 # MAGIC Class.forName("org.postgresql.Driver")
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC
+# MAGIC ⚠️ The following might break once Databricks stops running the database instance we reference below 
 
 # COMMAND ----------
 
