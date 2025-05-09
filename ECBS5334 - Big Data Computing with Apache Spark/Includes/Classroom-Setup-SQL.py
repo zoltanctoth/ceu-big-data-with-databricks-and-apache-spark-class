@@ -6,11 +6,32 @@
 # MAGIC %sql
 # MAGIC CREATE DATABASE IF NOT EXISTS ceu;
 # MAGIC USE ceu;
-# MAGIC
-# MAGIC DROP VIEW IF EXISTS sales;
-# MAGIC DROP VIEW IF EXISTS users;
-# MAGIC DROP VIEW IF EXISTS products;
-# MAGIC DROP VIEW IF EXISTS events;
+
+# COMMAND ----------
+
+try:
+    spark.sql("DROP VIEW IF EXISTS sales;")
+except:
+    spark.sql("DROP TABLE IF EXISTS sales;")
+
+try:
+    spark.sql("DROP VIEW IF EXISTS users;")
+except:
+    spark.sql("DROP TABLE IF EXISTS users;")
+
+try:
+    spark.sql("DROP VIEW IF EXISTS products;")
+except:
+    spark.sql("DROP TABLE IF EXISTS products;")
+
+try:
+    spark.sql("DROP VIEW IF EXISTS events;")
+except:
+    spark.sql("DROP TABLE IF EXISTS events;")
+
+# COMMAND ----------
+
+# MAGIC %sql
 # MAGIC
 # MAGIC CREATE VIEW IF NOT EXISTS users AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/users/users.delta`;
 # MAGIC CREATE VIEW IF NOT EXISTS sales AS SELECT * FROM delta.`s3a://dbx-data-public/v03/ecommerce/sales/sales.delta`;
