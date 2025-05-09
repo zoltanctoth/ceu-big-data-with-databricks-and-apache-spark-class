@@ -1,5 +1,4 @@
 # Databricks notebook source
-# MAGIC
 # MAGIC %md
 # MAGIC
 # MAGIC
@@ -110,7 +109,7 @@ print("All test pass")
 # MAGIC
 # MAGIC ### 5. Create the same DataFrame using SQL query
 # MAGIC - Use SparkSession to run a SQL query on the **`events`** table
-# MAGIC - Use SQL commands to write the same filter and sort query used earlier
+# MAGIC - Use SQL commands to write the same filter and sort query used in _Step 3_
 
 # COMMAND ----------
 

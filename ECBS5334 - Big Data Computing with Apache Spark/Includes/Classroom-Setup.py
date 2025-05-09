@@ -17,11 +17,29 @@ reset_working_dir()
 # MAGIC CREATE DATABASE IF NOT EXISTS ceu;
 # MAGIC USE ceu;
 # MAGIC
-# MAGIC DROP TABLE IF EXISTS sales;
-# MAGIC DROP TABLE IF EXISTS users;
-# MAGIC DROP TABLE IF EXISTS products;
-# MAGIC DROP TABLE IF EXISTS events;
 # MAGIC
+
+# COMMAND ----------
+
+try:
+    spark.sql("DROP VIEW IF EXISTS sales;")
+except:
+    spark.sql("DROP TABLE IF EXISTS sales;")
+
+try:
+    spark.sql("DROP VIEW IF EXISTS users;")
+except:
+    spark.sql("DROP TABLE IF EXISTS users;")
+
+try:
+    spark.sql("DROP VIEW IF EXISTS products;")
+except:
+    spark.sql("DROP TABLE IF EXISTS products;")
+
+try:
+    spark.sql("DROP VIEW IF EXISTS events;")
+except:
+    spark.sql("DROP TABLE IF EXISTS events;")
 
 # COMMAND ----------
 
@@ -35,4 +53,3 @@ displayHTML(f"- Users data: {users_path}")
 displayHTML(f"- Events data: {events_path}")
 displayHTML(f"- Products data: {products_path}")
 displayHTML(f"- Sales data: {sales_path}")
-

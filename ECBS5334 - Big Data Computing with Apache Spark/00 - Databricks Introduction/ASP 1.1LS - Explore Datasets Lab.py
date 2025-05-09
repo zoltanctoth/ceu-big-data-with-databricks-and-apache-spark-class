@@ -29,7 +29,7 @@
 # MAGIC ### 1. List files in DBFS using magic commands
 # MAGIC Use a magic command to display files located in the DBFS directory: **`/`**
 # MAGIC
-# MAGIC <img src="https://files.training.databricks.com/images/icon_hint_32.png" alt="Hint"> You should see several user directories including your own. Depending on your permissions, you may see only your user directory.
+# MAGIC <img src="https://files.training.databricks.com/images/icon_hint_32.png" alt="Hint"> You should see several directories.
 
 # COMMAND ----------
 
@@ -78,7 +78,6 @@ display(files)
 
 # COMMAND ----------
 
-# MAGIC
 # MAGIC %md
 # MAGIC
 # MAGIC
