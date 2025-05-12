@@ -1,5 +1,4 @@
 # Databricks notebook source
-# MAGIC
 # MAGIC %md
 # MAGIC
 # MAGIC
@@ -42,7 +41,7 @@ display(df)
 # MAGIC
 # MAGIC ### Grouping data
 # MAGIC
-# MAGIC <img src="https://files.training.databricks.com/images/aspwd/aggregation_groupby.png" width="60%" />
+# MAGIC
 
 # COMMAND ----------
 
