@@ -11,7 +11,7 @@
 # MAGIC 1. Predicate pushdown
 # MAGIC 1. No predicate pushdown
 # MAGIC
-# MAGIC ##### Methods 
+# MAGIC ##### Methods
 # MAGIC - <a href="https://spark.apache.org/docs/3.1.3/api/python/reference/api/pyspark.sql.DataFrame.explain.html#pyspark.sql.DataFrame.explain" target="_blank">DataFrame</a>: **`explain`**
 
 # COMMAND ----------
@@ -46,16 +46,16 @@ display(df)
 
 from pyspark.sql.functions import col
 
-limit_events_df = (df
-                   .filter(col("event_name") != "reviews")
-                   .filter(col("event_name") != "checkout")
-                   .filter(col("event_name") != "register")
-                   .filter(col("event_name") != "email_coupon")
-                   .filter(col("event_name") != "cc_info")
-                   .filter(col("event_name") != "delivery")
-                   .filter(col("event_name") != "shipping_info")
-                   .filter(col("event_name") != "press")
-                  )
+limit_events_df = (
+    df.filter(col("event_name") != "reviews")
+    .filter(col("event_name") != "checkout")
+    .filter(col("event_name") != "register")
+    .filter(col("event_name") != "email_coupon")
+    .filter(col("event_name") != "cc_info")
+    .filter(col("event_name") != "delivery")
+    .filter(col("event_name") != "shipping_info")
+    .filter(col("event_name") != "press")
+)
 
 limit_events_df.explain(True)
 
@@ -69,17 +69,17 @@ limit_events_df.explain(True)
 
 # COMMAND ----------
 
-better_df = (df
-             .filter((col("event_name").isNotNull()) &
-                     (col("event_name") != "reviews") &
-                     (col("event_name") != "checkout") &
-                     (col("event_name") != "register") &
-                     (col("event_name") != "email_coupon") &
-                     (col("event_name") != "cc_info") &
-                     (col("event_name") != "delivery") &
-                     (col("event_name") != "shipping_info") &
-                     (col("event_name") != "press"))
-            )
+better_df = df.filter(
+    (col("event_name").isNotNull())
+    & (col("event_name") != "reviews")
+    & (col("event_name") != "checkout")
+    & (col("event_name") != "register")
+    & (col("event_name") != "email_coupon")
+    & (col("event_name") != "cc_info")
+    & (col("event_name") != "delivery")
+    & (col("event_name") != "shipping_info")
+    & (col("event_name") != "press")
+)
 
 better_df.explain(True)
 
@@ -93,13 +93,13 @@ better_df.explain(True)
 
 # COMMAND ----------
 
-stupid_df = (df
-             .filter(col("event_name") != "finalize")
-             .filter(col("event_name") != "finalize")
-             .filter(col("event_name") != "finalize")
-             .filter(col("event_name") != "finalize")
-             .filter(col("event_name") != "finalize")
-            )
+stupid_df = (
+    df.filter(col("event_name") != "finalize")
+    .filter(col("event_name") != "finalize")
+    .filter(col("event_name") != "finalize")
+    .filter(col("event_name") != "finalize")
+    .filter(col("event_name") != "finalize")
+)
 
 stupid_df.explain(True)
 
@@ -120,7 +120,7 @@ stupid_df.explain(True)
 # MAGIC - Exploratory data analysis
 # MAGIC - Machine learning model training
 # MAGIC
-# MAGIC <img src="https://files.training.databricks.com/images/icon_warn_32.png" alt="Warning"> Aside from those use cases, you should **not** cache DataFrames because it is likely that you'll *degrade* the performance of your application.
+# MAGIC _Warning_: Aside from those use cases, you should **not** cache DataFrames because it is likely that you'll *degrade* the performance of your application.
 # MAGIC
 # MAGIC - Caching consumes cluster resources that could otherwise be used for task execution
 # MAGIC - Caching can prevent Spark from performing query optimizations, as shown in the next example
@@ -145,30 +145,26 @@ stupid_df.explain(True)
 
 # MAGIC %md
 # MAGIC
-# MAGIC ⚠️ The following might break once Databricks stops running the database instance we reference below 
+# MAGIC ⚠️ The following might break once Databricks stops running the database instance we reference below
 
 # COMMAND ----------
 
 jdbc_url = "jdbc:postgresql://server1.training.databricks.com/training"
 
 # Username and Password w/read-only rights
-conn_properties = {
-    "user" : "training",
-    "password" : "training"
-}
+conn_properties = {"user": "training", "password": "training"}
 
-pp_df = (spark
-         .read
-         .jdbc(url=jdbc_url,                 # the JDBC URL
-               table="training.people_1m",   # the name of the table
-               column="id",                  # the name of a column of an integral type that will be used for partitioning
-               lowerBound=1,                 # the minimum value of columnName used to decide partition stride
-               upperBound=1000000,           # the maximum value of columnName used to decide partition stride
-               numPartitions=8,              # the number of partitions/connections
-               properties=conn_properties    # the connection properties
-              )
-         .filter(col("gender") == "M")   # Filter the data by gender
-        )
+pp_df = spark.read.jdbc(
+    url=jdbc_url,  # the JDBC URL
+    table="training.people_1m",  # the name of the table
+    column="id",  # the name of a column of an integral type that will be used for partitioning
+    lowerBound=1,  # the minimum value of columnName used to decide partition stride
+    upperBound=1000000,  # the maximum value of columnName used to decide partition stride
+    numPartitions=8,  # the number of partitions/connections
+    properties=conn_properties,  # the connection properties
+).filter(
+    col("gender") == "M"
+)  # Filter the data by gender
 
 pp_df.explain(True)
 
@@ -193,17 +189,15 @@ pp_df.explain(True)
 
 # COMMAND ----------
 
-cached_df = (spark
-            .read
-            .jdbc(url=jdbc_url,
-                  table="training.people_1m",
-                  column="id",
-                  lowerBound=1,
-                  upperBound=1000000,
-                  numPartitions=8,
-                  properties=conn_properties
-                 )
-            )
+cached_df = spark.read.jdbc(
+    url=jdbc_url,
+    table="training.people_1m",
+    column="id",
+    lowerBound=1,
+    upperBound=1000000,
+    numPartitions=8,
+    properties=conn_properties,
+)
 
 cached_df.cache()
 filtered_df = cached_df.filter(col("gender") == "M")

@@ -182,7 +182,7 @@ display(sales_df.select(first_letter_udf(col("email"))))
 # MAGIC * <a href="https://arrow.apache.org/" target="_blank">Apache Arrow</a>, an in-memory columnar data format that is used in Spark to efficiently transfer data between JVM and Python processes with near-zero (de)serialization cost
 # MAGIC * Pandas inside the function, to work with Pandas instances and APIs
 # MAGIC
-# MAGIC <img src="https://files.training.databricks.com/images/icon_warn_32.png" alt="Warning"> As of Spark 3.0, you should **always** define your Pandas UDF using Python type hints.
+# MAGIC _Warning_: As of Spark 3.0, you should **always** define your Pandas UDF using Python type hints.
 
 # COMMAND ----------
 
